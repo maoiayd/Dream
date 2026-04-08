@@ -3,338 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dream Restaurant</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
-
+<title>شمبر للعطور</title>
 <style>
-body{
-margin:0;
-font-family:'Cairo',sans-serif;
-background:#0f172a;
-color:#fff;
+body{margin:0;font-family:Arial;background:#10202d;color:#f7f7f7;overflow-x:hidden;}
+
+/* Loader */
+#loader{
+  position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);
+  display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;
+}
+.snake{
+  width:60px;height:60px;border:5px solid #c7a667;border-radius:50%;border-top-color:transparent;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.loader-text{font-size:24px;font-weight:bold;text-shadow:0 0 5px #c7a667,0 0 15px #c7a667;margin-top:10px;}
+
+/* Header */
+header{padding:15px;text-align:center;position:relative;z-index:1;}
+
+/* زر السلة واضح وكبير */
+.cartBtn{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#c7a667;
+  color:#10202d;
+  font-size:28px;
+  padding:15px 20px;
+  border:none;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:999;
+  box-shadow:0 0 10px #c7a667;
 }
 
-/* الهيدر */
-header{
-background:#ff6a00;
-padding:15px;
-text-align:center;
-font-size:22px;
-}
+/* Nav */
+.nav{display:flex;justify-content:center;gap:10px;padding:10px;background:#10202d;z-index:1;}
+.nav button{background:#c7a667;border:none;padding:8px 15px;color:#10202d;border-radius:20px;cursor:pointer;}
 
-/* الأقسام فوق */
-.tabs{
-display:flex;
-justify-content:space-around;
-background:#1e293b;
-padding:10px;
-position:sticky;
-top:0;
-z-index:10;
-}
+/* Container */
+.container{padding:15px;}
+.products{display:none;grid-template-columns:repeat(2,1fr);gap:15px;min-height:300px;}
+.products.active{display:grid;animation:fade 0.4s;}
+.card{background: rgba(16,32,45,0.85);padding:10px;border-radius:10px;text-align:center;transition:0.3s;border:1px solid #c7a667;}
+.card:hover{transform:scale(1.05);}
+.product-img{width:100%;height:120px;object-fit:cover;border-radius:10px;}
+.desc{font-size:12px;opacity:0.9;}
+.price{color:#c7a667;font-weight:bold;}
+button{margin-top:8px;padding:7px;border:none;background:#c7a667;color:#10202d;border-radius:5px;cursor:pointer;}
 
-.tab{
-cursor:pointer;
-padding:8px 15px;
-border-radius:8px;
-transition:0.3s;
+/* Cart Popup أسفل منتصف الشاشة */
+.cartPopup{
+  position:fixed; bottom:70px; left:50%; transform:translateX(-50%);
+  background:rgba(16,32,45,0.95); padding:15px; border-radius:15px;
+  z-index:998; border:1px solid #c7a667; width:95%; max-width:400px;
+  display:none;
 }
+.cartPopup h3{text-align:center;margin-bottom:10px;}
+.cartPopup #cartItems p{margin:5px 0;}
+.cartPopup #total{font-weight:bold;margin-top:10px;text-align:center;}
+.cartPopup input{width:100%;margin:5px 0;padding:8px;border-radius:5px;border:none;}
+.cartPopup button{width:32%;margin:3px 1%;}
 
-.tab.active{
-background:#ff6a00;
-}
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;background:#c7a667;padding:10px;border-radius:5px;display:none;color:#10202d;}
 
-/* المنتجات */
-.container{
-padding:10px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-}
-
-/* أنيميشن */
-.fade{
-animation:fade 0.4s;
-}
-
-@keyframes fade{
-from{opacity:0; transform:translateY(10px);}
-to{opacity:1; transform:translateY(0);}
-}
-
-/* الكرت */
-.card{
-background:#1e293b;
-border-radius:10px;
-overflow:hidden;
-}
-
-.card img{
-width:100%;
-height:120px;
-object-fit:cover;
-}
-
-.card-content{
-padding:10px;
-text-align:center;
-}
-
-.price{
-color:#ff9800;
-}
-
-button{
-background:#ff6a00;
-border:none;
-padding:6px;
-color:#fff;
-border-radius:5px;
-cursor:pointer;
-}
-
-/* السلة */
-.cart-btn{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#ff6a00;
-padding:15px;
-border-radius:50%;
-cursor:pointer;
-}
-
-.cart{
-position:fixed;
-top:0;
-right:-100%;
-width:300px;
-height:100%;
-background:#1e293b;
-padding:15px;
-transition:0.3s;
-overflow:auto;
-}
-
-.cart.active{
-right:0;
-}
-
-.order-btn{
-background:#22c55e;
-width:100%;
-margin-top:10px;
-padding:10px;
-border:none;
-border-radius:8px;
-color:#fff;
-cursor:pointer;
-}
-
-/* إشعار الإضافة */
-#notif{
-position:fixed;
-top:20px;
-right:50%;
-transform:translateX(50%);
-background:#22c55e;
-color:#fff;
-padding:10px 20px;
-border-radius:8px;
-display:none;
-font-weight:bold;
-z-index:1000;
-}
+/* Animations */
+@keyframes fade{0%{opacity:0;}100%{opacity:1;}}
 </style>
 </head>
-
 <body>
 
-<header>🍔 Dream Restaurant</header>
-
-<!-- الأقسام -->
-<div class="tabs">
-<div class="tab active" onclick="load('food',this)">🍔 مأكولات</div>
-<div class="tab" onclick="load('dessert',this)">🍰 حلويات</div>
-<div class="tab" onclick="load('juice',this)">🧃 عصائر</div>
+<!-- Loader -->
+<div id="loader">
+  <div class="snake"></div>
+  <div class="loader-text">شمبر</div>
 </div>
 
-<!-- المنتجات -->
+<header>✨ شمبر ✨</header>
+
+<div class="nav">
+<button onclick="switchSection('men')">رجالي</button>
+<button onclick="switchSection('women')">نسائي</button>
+<button onclick="switchSection('unisex')">للجنسين</button>
+</div>
+
 <div class="container">
-<div class="grid fade" id="grid"></div>
+<div id="men" class="products active"></div>
+<div id="women" class="products"></div>
+<div id="unisex" class="products"></div>
 </div>
 
-<!-- السلة -->
-<div class="cart-btn" onclick="toggleCart()">🛒</div>
-<div class="cart" id="cart">
-<h3>السلة</h3>
-<div id="cartItems"></div>
-<input id="address" placeholder="اكتب عنوان إضافي (اختياري)">
-<button class="order-btn" onclick="sendOrder()">🚚 توصيل الطلب</button>
+<!-- زر السلة -->
+<button class="cartBtn" onclick="toggleCart()">🛒</button>
+
+<!-- Cart Popup -->
+<div class="cartPopup" id="cartPopup">
+<h3>🛒 السلة</h3>
+<div id="cartItems"><p>السلة فارغة</p></div>
+<h4 id="total"></h4>
+<input type="text" id="userName" placeholder="اسمك">
+<input type="text" id="userPhone" placeholder="رقم الهاتف">
+<button onclick="sendOrder()">إتمام الطلب</button>
+<button onclick="toggleCart()">❌ إغلاق</button>
 </div>
 
-<!-- إشعار الإضافة -->
-<div id="notif">تمت الإضافة للسلة</div>
+<div class="toast" id="toast">تمت الإضافة ✅</div>
 
 <script>
-const data={
-food:[
-["برجر",2500,"https://images.unsplash.com/photo-1568901346375-23c9450c58cd"],
-["شاورما",2000,"https://images.unsplash.com/photo-1604908176997-431c6f2d7f1c"],
-["فراخ",2200,"https://images.unsplash.com/photo-1600891964599-f61ba0e24092"],
-["بطاطس",800,"https://images.unsplash.com/photo-1586190848861-99aa4a171e90"],
-["بيتزا",3500,"https://images.unsplash.com/photo-1548365328-9f547fb0953d"],
-["ساندوتش",1500,"https://images.unsplash.com/photo-1550547660-d9450f859349"],
-["نقانق",1800,"https://images.unsplash.com/photo-1600891964599-f61ba0e24092"],
-["برجر دبل",3000,"https://images.unsplash.com/photo-1550547660-d9450f859349"]
-],
-dessert:[
-["كيك",1500,"https://images.unsplash.com/photo-1605478039217-7b8c5c8a2b9d"],
-["كنافة",1800,"https://images.unsplash.com/photo-1589308078059-be1415eab4c3"],
-["تشيز كيك",2000,"https://images.unsplash.com/photo-1565958011703-44f9829ba187"],
-["بقلاوة",1700,"https://images.unsplash.com/photo-1617191515003-7cde6b1d3c47"],
-["دونات",1000,"https://images.unsplash.com/photo-1505253210343-6c2f1f7d3c5d"],
-["كوكيز",900,"https://images.unsplash.com/photo-1499636136210-6f4ee915583e"],
-["آيسكريم",800,"https://images.unsplash.com/photo-1505253210343-6c2f1f7d3c5d"],
-["بسبوسة",1200,"https://images.unsplash.com/photo-1600891964599-f61ba0e24092"]
-],
-juice:[
-["برتقال",1000,"https://images.unsplash.com/photo-1553531889-56cc480ac5cb"],
-["مانجو",1200,"https://images.unsplash.com/photo-1577805947697-89e18249d767"],
-["فراولة",1100,"https://images.unsplash.com/photo-1551024709-8f23befc6f87"],
-["ليمون",800,"https://images.unsplash.com/photo-1524594154908-eddc3c1f6f5e"],
-["كوكتيل",1500,"https://images.unsplash.com/photo-1551024709-8f23befc6f87"],
-["أناناس",1300,"https://images.unsplash.com/photo-1502741338009-cac2772e18bc"],
-["جوافة",1000,"https://images.unsplash.com/photo-1524594154908-eddc3c1f6f5e"],
-["رمان",1400,"https://images.unsplash.com/photo-1505253210343-6c2f1f7d3c5d"]
-]
-};
+const products=[
+{ id:1,name:"باريس",price:50,image:"kimo1.jpg",desc:"عطر رجالي",category:"men"},
+{ id:2,name:"الاحلام",price:200,image:"kimo2.jpg",desc:"عطر رجالي",category:"men"},
+{ id:3,name:"هدوئ اليلي",price:170,image:"kimo3.jpg",desc:"عطر رجالي",category:"men"},
+{ id:4,name:"الاسد",price:130,image:"kimo4.jpg",desc:"عطر رجالي",category:"men"},
+{ id:5,name:"الفارس",price:80,image:"kimo5.jpg",desc:"عطر رجالي",category:"men"},
+{ id:6,name:"الانوثه",price:250,image:"kimo6.jpg",desc:"عطر نسائي",category:"women"},
+{ id:7,name:"الاميره",price:180,image:"kimo7.jpg",desc:"عطر نسائي",category:"women"},
+{ id:8,name:"زهرة الوتس",price:90,image:"kimo8.jpg",desc:"عطر نسائي",category:"women"},
+{ id:9,name:"رياح الجنوب",price:70,image:"kimo9.jpg",desc:"عطر نسائي",category:"women"},
+{ id:10,name:"البنفسج",price:65,image:"kimo10.jpg",desc:"عطر نسائي",category:"women"},
+{ id:11,name:"Tom Ford Oud",price:80,image:"kimo11.jpg",desc:"للجنسين",category:"unisex"},
+{ id:12,name:"Bleu de Chanel",price:60,image:"kimo12.jpg",desc:"للجنسين",category:"unisex"}
+];
 
 let cart=[];
 
-// تحميل المنتجات
-function load(type,el){
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-el.classList.add("active");
+function saveCart(){localStorage.setItem("cart",JSON.stringify(cart));}
 
-let grid=document.getElementById("grid");
-grid.classList.remove("fade");
-
-setTimeout(()=>{
-grid.innerHTML="";
-data[type].forEach(i=>{
-grid.innerHTML+=`
+function renderProducts(){
+["men","women","unisex"].forEach(cat=>{
+let container=document.getElementById(cat);
+container.innerHTML="";
+products.filter(p=>p.category===cat).forEach(p=>{
+container.innerHTML+=`
 <div class="card">
-<img src="${i[2]}">
-<div class="card-content">
-<h4>${i[0]}</h4>
-<p class="price">${i[1]} جنيه</p>
-<button onclick="add('${i[0]}',${i[1]})">إضافة</button>
-</div>
-</div>
-`;
-});
-grid.classList.add("fade");
-},150);
-}
-
-// إضافة المنتج + إشعار
-function add(name,price){
-cart.push({name,price});
-renderCart();
-showNotif();
-}
-
-// إشعار الإضافة
-function showNotif(){
-let n = document.getElementById("notif");
-n.style.display = "block";
-setTimeout(()=>{ n.style.display = "none"; },1500);
-}
-
-// عرض السلة
-function renderCart(){
-let box = document.getElementById("cartItems");
-box.innerHTML = "";
-
-// تلخيص المنتجات المكررة
-let summary = {};
-cart.forEach(i=>{
-if(summary[i.name]){
-summary[i.name].qty += 1;
-}else{
-summary[i.name] = {price: i.price, qty:1};
-}
-});
-
-let total = 0;
-for(let key in summary){
-let item = summary[key];
-let itemTotal = item.price * item.qty;
-total += itemTotal;
-box.innerHTML += `<div style="margin-bottom:8px;">
-<strong>${key}</strong><br>
-السعر لكل وحدة: ${item.price} جنيه<br>
-الكمية: ${item.qty}<br>
-المجموع: ${itemTotal} جنيه
+<img src="${p.image}" class="product-img">
+<h4>${p.name}</h4>
+<p class="desc">${p.desc}</p>
+<p class="price">${p.price}$</p>
+<button onclick="addToCart(${p.id})">إضافة</button>
 </div>`;
+});
+});
 }
 
-box.innerHTML += `<hr><div><strong>السعر الكلي: ${total} جنيه</strong></div>`;
+/* Cart */
+function displayCart(){
+let div=document.getElementById("cartItems");
+div.innerHTML="";
+if(cart.length===0){
+  div.innerHTML="<p>السلة فارغة</p>";
+  document.getElementById("total").innerText="";
+  return;
 }
-
-// فتح وغلق السلة
-function toggleCart(){
-document.getElementById("cart").classList.toggle("active");
-}
-
-// إرسال الطلب + الموقع
-function sendOrder(){
-if(cart.length === 0){
-alert("السلة فاضية!");
-return;
-}
-
-navigator.geolocation.getCurrentPosition(function(position){
-let lat = position.coords.latitude;
-let lon = position.coords.longitude;
-let locationLink = `https://maps.google.com/?q=${lat},${lon}`;
-
-let msg = "🛒 طلب جديد:%0A";
-
-let summary = {};
+let total=0;
 cart.forEach(i=>{
-if(summary[i.name]){
-summary[i.name].qty += 1;
-}else{
-summary[i.name] = {price: i.price, qty:1};
-}
+  total+=i.price*i.qty;
+  div.innerHTML+=`<p>📦 ${i.name} × ${i.qty} = ${i.price*i.qty}$</p>`;
 });
-
-for(let key in summary){
-let item = summary[key];
-let itemTotal = item.price * item.qty;
-msg += `${key} - ${item.qty} وحدة - ${itemTotal} جنيه%0A`;
+document.getElementById("total").innerText="💵 الإجمالي: "+total+"$";
 }
 
-let address = document.getElementById("address").value;
-msg += `%0A📍 الموقع:%0A${locationLink}`;
-msg += `%0A🏠 عنوان إضافي: ${address}`;
-
-window.open(`https://wa.me/249994501781?text=${msg}`);
-
-}, function(){
-alert("فشل في تحديد الموقع ❌ شغل الـ GPS");
-});
+function toggleCart(){
+let c=document.getElementById("cartPopup");
+displayCart(); 
+c.style.display = c.style.display==="block" ? "none" : "block";
 }
 
-// تحميل قسم مأكولات أولاً
-load('food',document.querySelector(".tab"));
+function addToCart(id){
+let product=products.find(p=>p.id===id);
+let item=cart.find(i=>i.id===id);
+if(item){item.qty++;}else{cart.push({...product,qty:1});}
+saveCart();
+showToast();
+}
+
+function showToast(){
+let t=document.getElementById("toast");
+t.style.display="block"; 
+setTimeout(()=>t.style.display="none",1500);
+}
+
+/* Loader & Switch Sections */
+const loader=document.getElementById("loader");
+function switchSection(cat){
+  loader.style.display="flex";
+  let randomTime=Math.floor(Math.random()*5000)+1000;
+  setTimeout(()=>{
+    document.querySelectorAll(".products").forEach(s=>s.classList.remove("active"));
+    document.getElementById(cat).classList.add("active");
+    loader.style.display="none";
+  }, randomTime);
+}
+
+/* Send Order via WhatsApp */
+function sendOrder(){
+  let name=document.getElementById("userName").value;
+  let phone=document.getElementById("userPhone").value;
+  if(!name||!phone){alert("املأ الاسم ورقم الهاتف");return;}
+  if(cart.length===0){alert("السلة فارغة");return;}
+  let message="طلب جديد من شمبر للعطور:\n";
+  message+="الاسم: "+name+"\nرقم الهاتف: "+phone+"\n\n";
+  let total=0;
+  cart.forEach(item=>{
+    message+=`• ${item.name} × ${item.qty} = ${item.price*item.qty}$\n`;
+    total+=item.price*item.qty;
+  });
+  message+="\n💵 المجموع: "+total+"$";
+  window.open("https://wa.me/249994501781?text="+encodeURIComponent(message),"_blank");
+
+  // مسح السلة بعد الطلب
+  cart=[];
+  saveCart();
+  displayCart();
+  toggleCart();
+}
+
+renderProducts();
+loader.style.display="none";
 </script>
-
 </body>
 </html>
